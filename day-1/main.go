@@ -34,21 +34,41 @@ func loadInput(fileName string) (left []int, right []int, err error) {
 		left = append(left, leftValue)
 		right = append(right, rightValue)
 	}
-	slices.Sort(left)
-	slices.Sort(right)
 
 	return
 }
+
+func getSort(list []int) []int {
+	sortedList := make([]int, len(list))
+	copy(sortedList, list)
+	slices.Sort(sortedList)
+	return sortedList
+}
+
 func calculatePath(left, right []int) (result int) {
+	sortedLeft := getSort(left)
+	sortedRight := getSort(right)
 
-	for index, valueLeft := range left {
-		valueRight := right[index]
+	for index, valueLeft := range sortedLeft {
+		valueRight := sortedRight[index]
 		diff := valueRight - valueLeft
-
 		if diff < 0 {
 			diff *= -1
 		}
 		result += diff
+	}
+	return
+}
+func calculateDiff(left, right []int) (result int) {
+	counter := make(map[int]int)
+
+	for _, value := range right {
+		counter[value] += 1
+	}
+	for _, value := range left {
+		if count, ok := counter[value]; ok {
+			result += value * count
+		}
 	}
 	return
 }
@@ -61,5 +81,6 @@ func main() {
 	}
 	result := calculatePath(left, right)
 	slog.Info("Path is", "path", result)
+	slog.Info("Part 2 result", "result", calculateDiff(left, right))
 
 }
